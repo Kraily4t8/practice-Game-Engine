@@ -10,7 +10,7 @@ class GameEngine {
         this.entities = [];
 
         // Information on the input
-        this.click = null;
+        this.click = null; //on click jump
         this.mouse = null;
         this.wheel = null;
         this.keys = {};
