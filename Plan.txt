@@ -1,0 +1,6 @@
+get character img loaded
+render charcter
+	render sprite sheet
+	render one cell in the sheet
+	get action feedback thru console
+	on action, switch cell in the sheet
