@@ -110,6 +110,7 @@ class GameEngine {
 
     loop() {
         this.clockTick = this.timer.tick();
+        // console.log(this.clockTick);
         this.update();
         this.draw();
     };

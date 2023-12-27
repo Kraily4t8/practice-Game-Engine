@@ -14,5 +14,9 @@ ASSET_MANAGER.downloadAll(() => {
 
 	gameEngine.init(ctx);
 
+	//scenemanager
+	gameEngine.addEntity(new CatPlayer);
+	
+
 	gameEngine.start();
 });
