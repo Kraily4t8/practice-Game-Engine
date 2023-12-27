@@ -1,3 +1,8 @@
+Rough plans for things dev needs to work on:
+
+Learning goals in addition to web game series:
+Arrow functions
+
 get character img loaded
 render charcter
 	render sprite sheet
