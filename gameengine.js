@@ -13,7 +13,8 @@ class GameEngine {
         this.click = null; //on click jump
         this.mouse = null;
         this.wheel = null;
-        this.keys = {};
+        this.keys = {
+            right : null};
 
         // Options and the Details
         this.options = options || {
