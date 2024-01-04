@@ -15,7 +15,7 @@ ASSET_MANAGER.downloadAll(() => {
 	gameEngine.init(ctx);
 
 	//scenemanager
-	gameEngine.addEntity(new CatPlayer(gameEngine, 0, 0));
+	gameEngine.addEntity(new CatPlayer(gameEngine, 0, 0, ASSET_MANAGER.getAsset("./assets/Sprout Lands - Sprites - Basic pack/Characters/Basic Charakter Spritesheet.png")));
 	
 
 	gameEngine.start();
