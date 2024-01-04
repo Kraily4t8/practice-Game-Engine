@@ -31,6 +31,7 @@ class AssetManager {
 
             img.addEventListener("error", () => {//on load fails
                 console.log("Error loading " + img.src);
+                console.error();
                 this.errorCount++;
                 if (this.isDone()) callback();
             });
