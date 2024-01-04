@@ -10,7 +10,7 @@ class CatPlayer {
         this.cellStart = 18;
         this.cellJump = 48;
         this.iteration = 0;
-        this.looptime = 20;
+        this.looptime = 13;
     }
 
     update() {
@@ -19,9 +19,9 @@ class CatPlayer {
 
     draw(ctx) { //render
         this.elapsedTime++;
-        if(this.game.keys[right.key]) {
-            console.log("stuff");
-        }
+        // if(this.game.keys[right.key]) {
+        //     console.log("stuff");
+        // }
         this.walkRight(ctx,50,50);
         this.walkRight2(ctx,200,50);
         if(this.elapsedTime > this.looptime) {
