@@ -1,7 +1,7 @@
 class CatPlayer {
     constructor(game, x, y) {
         Object.assign(this, { game, x, y });
-        this.spritesheet = ASSET_MANAGER.getAsset("/assets/Sprout Lands - Sprites - Basic pack/Characters/Basic Charakter Spritesheet.png");
+        this.spritesheet = ASSET_MANAGER.getAsset("../assets/Sprout Lands - Sprites - Basic pack/Characters/Basic Charakter Spritesheet.png");
         this.elapsedTime = 0;
         this.frame = 1;
 
