@@ -13,8 +13,11 @@ class GameEngine {
         this.click = null; //on click jump
         this.mouse = null;
         this.wheel = null;
-        this.keys = {
-            right : null};
+        
+        this.left = null;
+        this.right = null;
+        this.up = null;
+        this.down = null;
 
         // Options and the Details
         this.options = options || {
@@ -38,43 +41,24 @@ class GameEngine {
     };
 
     startInput() {
-        const getXandY = e => ({
-            x: e.clientX - this.ctx.canvas.getBoundingClientRect().left,
-            y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
-        });
-        
-        this.ctx.canvas.addEventListener("mousemove", e => {
-            if (this.options.debugging) {
-                console.log("MOUSE_MOVE", getXandY(e));
-            }
-            this.mouse = getXandY(e);
-        });
+        var that = this;
 
-        this.ctx.canvas.addEventListener("click", e => {
-            if (this.options.debugging) {
-                console.log("CLICK", getXandY(e));
+        this.ctx.canvas.addEventListener("keydown", function(e) {
+            switch(e.code) {
+                case "KeyA": 
+                    that.left = true;
+                break;
+                case "KeyD": 
+                    that.right = true;
+                break;
+                case "KeyW": 
+                    that.up = true;
+                break;
+                case "KeyS": 
+                    that.down = true;
+                break;
             }
-            this.click = getXandY(e);
-        });
-
-        this.ctx.canvas.addEventListener("wheel", e => {
-            if (this.options.debugging) {
-                console.log("WHEEL", getXandY(e), e.wheelDelta);
-            }
-            e.preventDefault(); // Prevent Scrolling
-            this.wheel = e;
-        });
-
-        this.ctx.canvas.addEventListener("contextmenu", e => {
-            if (this.options.debugging) {
-                console.log("RIGHT_CLICK", getXandY(e));
-            }
-            e.preventDefault(); // Prevent Context Menu
-            this.rightclick = getXandY(e);
-        });
-
-        this.ctx.canvas.addEventListener("keydown", event => this.keys[event.key] = true);
-        this.ctx.canvas.addEventListener("keyup", event => this.keys[event.key] = false);
+        })
     };
 
     addEntity(entity) {
