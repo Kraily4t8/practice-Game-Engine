@@ -12,14 +12,44 @@ class Miku {
         this.defeat = new Animator(this.spritesheet, 0, 370, 86, 60, 3, 0.6, 0, false, true);
         this.dance = new Animator(this.spritesheet, 0, 432, 83.5, 64, 12, 0.25, 0.45, false, true);
         //loop length
+        this.currentAnimation = this.idle;
+        this.flipped = false;
+
+        this.x = x;
+        this.y = y;
+        this.counter = 20;
     }
 
     update() {
-        
+        if(this.game.right) {
+            // console.log("right");
+            this.currentAnimation = this.walkRight;
+            this.x++;
+            this.flipped = false;
+        }
+        if(this.game.left) {
+            // console.log("left");
+            this.currentAnimation = this.walkRight;
+            this.x--;
+            this.flipped = true;
+        }
+        if(this.game.up) {
+            // this.currentAnimation = this.jump;
+            // this.y--;
+            this.currentAnimation = this.attack;
+        }
+        if(this.game.down) {
+            this.currentAnimation = this.falling;
+            this.y++;
+        }
+        if (!this.game.right && !this.game.left && !this.game.up && !this.game.down) {
+            this.currentAnimation = this.idle;
+        }
     }
 
     draw(ctx) {
-        this.animationTest(ctx, 2.2);
+        this.currentAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, this.flipped);
+        // this.animationTest(ctx, 2.2);
         // let scale = 3;
         // this.idle.drawFrame(this.game.clockTick, ctx, 0, 0, scale, false);
         // this.idle.drawFrame(this.game.clockTick, ctx, 175, 0, scale, true);

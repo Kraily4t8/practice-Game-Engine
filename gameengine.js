@@ -44,6 +44,7 @@ class GameEngine {
         var that = this;
 
         this.ctx.canvas.addEventListener("keydown", function(e) {
+            // console.log(e.code);
             switch(e.code) {
                 case "KeyA": 
                     that.left = true;
@@ -56,6 +57,24 @@ class GameEngine {
                 break;
                 case "KeyS": 
                     that.down = true;
+                break;
+            }
+        });
+        
+        this.ctx.canvas.addEventListener("keyup", function(e) {
+            // console.log(e.code);
+            switch(e.code) {
+                case "KeyA": 
+                    that.left = false;
+                break;
+                case "KeyD": 
+                    that.right = false;
+                break;
+                case "KeyW": 
+                    that.up = false;
+                break;
+                case "KeyS": 
+                    that.down = false;
                 break;
             }
         })
