@@ -7,12 +7,16 @@ class Miku {
         this.y = y;
         this.counter = 20;
 
-        this.flipped = false; //facing
+        this.facing = false; //facing
         this.state = 0; //0 = idle, 1 = walking, 2 = running, 3= jump, 4= falling, 5= landing, 6= attacking, 7= dancing, 8 = jumping
         this.defeat = false;
+        this.flickerflag = true; //when hurt
         //defeat
         
         this.animations = [];
+        this.animationIterator = 0;
+        this.elaspedTime = 0;
+        this.elaspedTimeFlicker = 0;
         //loop length
         this.loadAnimations();
         this.currentAnimation = this.idle;
@@ -36,12 +40,17 @@ class Miku {
     }
 
     update() {
-        // this.moving
+        // this.moving();
+        // console.log(this.game.timer.tick() + "");
     }
     
     draw(ctx) {
-        // this.currentAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, this.flipped);
-        this.animationTest(ctx, 2.2);
+        // this.currentAnimation.drawFrame(this.game.clockTick, ctx, this.x, this.y, 2, this.facing);
+        // this.animationTest(ctx, 2.2);
+        
+        this.eachAnimation(ctx,2.75);
+        this.elaspedTime += this.game.clockTick;
+        this.elaspedTimeFlicker += this.game.clockTick;
         // let scale = 3;
         // this.idle.drawFrame(this.game.clockTick, ctx, 0, 0, scale, false);
         // this.idle.drawFrame(this.game.clockTick, ctx, 175, 0, scale, true);
@@ -52,13 +61,13 @@ class Miku {
             // console.log("right");
             this.currentAnimation = this.animations[1];
             this.x++;
-            this.flipped = false;
+            this.facing = false;
         }
         if(this.game.left) {
             // console.log("left");
             this.currentAnimation = this.animations[1];
             this.x--;
-            this.flipped = true;
+            this.facing = true;
         }
         if(this.game.up) {
             // this.currentAnimation = this.jump;
@@ -72,6 +81,33 @@ class Miku {
         if (!this.game.right && !this.game.left && !this.game.up && !this.game.down) {
             this.currentAnimation = this.animations[0];
         }
+    }
+
+    flickerTest(ctx) {
+        if(this.elaspedTimeFlicker >  0.5) {
+            this.flickerflag = !this.flickerflag;
+            this.elaspedTimeFlicker = 0;
+        } 
+        // else if (this.flickerflag && this.elaspedTimeFlicker > 0.1) {
+        //     this.flickerflag = false;
+        //     this.elaspedTimeFlicker = 0;
+        // }
+        if(this.flickerflag) {
+            this.animations[0].drawFrame(this.game.clockTick, ctx, 0, 0, 3);
+        }
+    }
+
+    eachAnimation(ctx, time) {
+        if(this.animationIterator == this.animations.length - 1) {
+            this.facing = !this.facing;
+            this.animationIterator = 0;
+        }
+        if(this.elaspedTime > time) {
+            this.animationIterator++;
+            this.elaspedTime = 0;
+        }
+        
+        this.animations[this.animationIterator].drawFrame(this.game.clockTick, ctx, 0, 0, 3,this.facing);
     }
 
     animationTest(ctx,scale, flip) {
