@@ -15,6 +15,8 @@ ASSET_MANAGER.downloadAll(() => {
 
 	gameEngine.init(ctx);
 
+	ctx.imageSmoothingEnabled = false;
+
 	//scenemanager
 	// gameEngine.addEntity(new CatPlayer(gameEngine, 0, 0, ASSET_MANAGER.getAsset("./assets/Sprout Lands - Sprites - Basic pack/Characters/Basic Charakter Spritesheet.png")));
 	// gameEngine.addEntity(new SpecterKnight(gameEngine, 0, 0, ASSET_MANAGER.getAsset("./specter knight.png")));
