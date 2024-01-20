@@ -20,7 +20,6 @@ class Miku {
         this.elaspedTimeFlicker = 0;
         //loop length
         this.loadAnimations();
-        this.currentAnimation = this.idle;
     }
     
     loadAnimations() {
@@ -43,6 +42,9 @@ class Miku {
     update() {
         // this.moving();
         this.physics();
+
+        this.updateLastBB();
+        this.updateBB();
         // console.log(this.game.timer.tick() + "");
     }
     
@@ -54,6 +56,14 @@ class Miku {
         // this.alignAnimation(ctx, 50, 150, 1.5, false);
         // this.elaspedTimeFlicker += this.game.clockTick;
         this.adjustSpritePosition(ctx, 1.5);
+
+        //bounding circle
+        // ctx.beginPath();
+        // ctx.arc(this.x + 50,this.y + 50, 35, 50, 0, 2* Math.PI);
+        // ctx.stroke();
+
+        //bounding box
+        ctx.strokeRect(this.x + 25, this.y + 5, 42, 86);
 
         // this.idle.drawFrame(this.game.clockTick, ctx, 0, 0, scale, false);
         // this.idle.drawFrame(this.game.clockTick, ctx, 175, 0, scale, true);
@@ -101,32 +111,14 @@ class Miku {
         }
         this.animations[this.state].drawFrame(this.game.clockTick, ctx, this.x - (disjointX * facing) - alignX, this.y - alignY, scale, this.facing);
     }
+    
+    updateBB() {
+        //this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
+        this.BB = new BoundingBox(this.x + 25, this.y + 5, 42, 86);
+    }
 
-    moving() {
-        if(this.game.right) {
-            // console.log("right");
-            this.currentAnimation = this.animations[1];
-            this.x++;
-            this.facing = false;
-        }
-        if(this.game.left) {
-            // console.log("left");
-            this.currentAnimation = this.animations[1];
-            this.x--;
-            this.facing = true;
-        }
-        if(this.game.up) {
-            // this.currentAnimation = this.jump;
-            // this.y--;
-            this.currentAnimation = this.animations[6];
-        }
-        if(this.game.down) {
-            this.currentAnimation = this.animations[4];
-            this.y++;
-        }
-        if (!this.game.right && !this.game.left && !this.game.up && !this.game.down) {
-            this.currentAnimation = this.animations[0];
-        }
+    updateLastBB() {
+        this.lastBB = this.BB;
     }
 
     physics() {
@@ -142,7 +134,7 @@ class Miku {
         const MIN_FALL = 20;
         const MAX_FALL = 100;
 
-        const FLOOR = 100;
+        const FLOOR = 250;
 
         if (Math.abs(this.velocity.x) < MIN_WALK) { //if not moving, check for button then add movement
             this.velocity.x = 0;
@@ -180,7 +172,6 @@ class Miku {
         if(this.game.up) {
             
             if(this.y >= FLOOR) {
-                console.log("up");
                 this.velocity.y = -80;
             }
         }
@@ -202,17 +193,20 @@ class Miku {
             }
             
         } else {
-            if(this.velocity.y < 0) this.state = 3;//jumping
-            if(this.velocity.y > 0) this.state = 4;//falling
-            if(this.velocity.y == 0) this.state = 5;//falling
+            if(this.velocity.y < 0 && this.state != 5) this.state = 3;//jumping
+            if(this.velocity.y > 0 && this.state != 5) this.state = 4;//falling
+            if(this.velocity.y == 0) this.state = 5 // just before landing
         }
         //update direction 
         if (this.velocity.x < 0) this.facing = true;
         if (this.velocity.x > 0) this.facing = false;
 
-        //update speed
+        //update position
         this.x += this.velocity.x * TICK * 2;
         this.y += this.velocity.y * TICK * 2;
+        // this.updateLastBB();
+        // this.updateBB();
+
         // console.log("ypos " + this.y + " vely " + this.velocity.y);
     }
 
