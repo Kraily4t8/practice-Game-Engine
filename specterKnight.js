@@ -31,8 +31,7 @@ class SpecterKnight {
     }
 
     update() {
-        //updateBB
-        this.physics();
+        // this.physics();
         this.updateLastBB();
         this.updateBB();
     }
@@ -47,6 +46,7 @@ class SpecterKnight {
     updateBB() {
         //this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
         this.BB = new BoundingBox(this.x + 10, this.y + 5, 42, 70);
+        // console.log("specter knight BB");
     }
 
     updateLastBB() {

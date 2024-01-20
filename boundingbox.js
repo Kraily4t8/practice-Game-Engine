@@ -13,7 +13,8 @@ class BoundingBox {
         if(this.right > other.left) { // if right side is to the left of other
             if(this.left < other.right) {// if left is to the right of other
                 if(this.top < other.bot) { //if top is below the other
-                    if(this.bot < other.top) { // if bot is above the other
+                    if(this.bot > other.top) { // if bot is above the other
+                        
                         return true;
                     }
                 }

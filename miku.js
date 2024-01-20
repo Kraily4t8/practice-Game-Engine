@@ -3,7 +3,7 @@ class Miku {
         Object.assign(this, { game, x, y, spritesheet});
         //(spritesheet, xStart, yStart, refWidth, refHeight, frameCount, frameDuration, framePadding, reverse, loop)
         
-        this.x = x;
+        this.x = x - 25;
         this.y = y;
         this.velocity = {x:0, y:0};
 
@@ -13,6 +13,9 @@ class Miku {
         this.flickerflag = true; //when hurt
         //defeat
         this.fall_acc = 30;
+
+        this.BB;
+        this.lastBB;
         
         this.animations = [];
         this.animationIterator = 0;
@@ -43,8 +46,6 @@ class Miku {
         // this.moving();
         this.physics();
 
-        this.updateLastBB();
-        this.updateBB();
         // console.log(this.game.timer.tick() + "");
     }
     
@@ -170,14 +171,14 @@ class Miku {
         this.velocity.y += this.fall_acc * TICK;
 
         if(this.game.up) {
-            
-            if(this.y >= FLOOR) {
+            console.log("jump");
+            if(this.velocity.y == 0) {
                 this.velocity.y = -80;
+                
             }
         }
         //update min y
-        if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
-        // if(this.y >= FLOOR) this.y = FLOOR;
+        // if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
 
         //update max
         if (this.velocity.x >= MAX_WALK) this.velocity.x = MAX_WALK;
@@ -204,10 +205,30 @@ class Miku {
         //update position
         this.x += this.velocity.x * TICK * 2;
         this.y += this.velocity.y * TICK * 2;
-        // this.updateLastBB();
-        // this.updateBB();
+        this.updateLastBB();
+        this.updateBB();
+        // console.log(" vely " + this.velocity.y);
 
-        // console.log("ypos " + this.y + " vely " + this.velocity.y);
+        //update collision
+        var that = this;
+        this.game.entities.forEach(function(entity) {
+            if(entity.BB && that.BB.collide(entity.BB)) {
+                if(that.velocity.y > 0) { //if falling
+                    if(that.y >= 200) {
+                        that.y = 200 - 0;
+                        that.velocity.y = 0;
+                        if(that.state === 4) that.state = 0;
+                    }
+                    if((entity instanceof Ground)//landing
+                    && (that.lastBB.bot) <= entity.BB.top) { 
+                        that.y = entity.BB.top - 91.07; //PARAMS.BLOCKWIDTH
+                        that.velocity.y = 0;
+                    }
+                    console.log(" vely " + that.velocity.y);
+                    // 
+                }
+            }
+        });
     }
 
     flickerTest(ctx) {
