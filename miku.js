@@ -172,13 +172,13 @@ class Miku {
 
         if(this.game.up) {
             console.log("jump");
-            if(this.velocity.y == 0) {
+            if(this.y >=  FLOOR) {
                 this.velocity.y = -80;
                 
             }
         }
         //update min y
-        // if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
+        if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
 
         //update max
         if (this.velocity.x >= MAX_WALK) this.velocity.x = MAX_WALK;
@@ -210,25 +210,25 @@ class Miku {
         // console.log(" vely " + this.velocity.y);
 
         //update collision
-        var that = this;
-        this.game.entities.forEach(function(entity) {
-            if(entity.BB && that.BB.collide(entity.BB)) {
-                if(that.velocity.y > 0) { //if falling
-                    if(that.y >= 200) {
-                        that.y = 200 - 0;
-                        that.velocity.y = 0;
-                        if(that.state === 4) that.state = 0;
-                    }
-                    if((entity instanceof Ground)//landing
-                    && (that.lastBB.bot) <= entity.BB.top) { 
-                        that.y = entity.BB.top - 91.07; //PARAMS.BLOCKWIDTH
-                        that.velocity.y = 0;
-                    }
-                    console.log(" vely " + that.velocity.y);
-                    // 
-                }
-            }
-        });
+        // var that = this;
+        // this.game.entities.forEach(function(entity) {
+        //     if(entity.BB && that.BB.collide(entity.BB)) {
+        //         if(that.velocity.y > 0) { //if falling
+        //             if(that.y >= 200) {
+        //                 that.y = 200 - 0;
+        //                 that.velocity.y = 0;
+        //                 if(that.state === 4) that.state = 0;
+        //             }
+        //             if((entity instanceof Ground)//landing
+        //             && (that.lastBB.bot) <= entity.BB.top) { 
+        //                 that.y = entity.BB.top - 91.07; //PARAMS.BLOCKWIDTH
+        //                 that.velocity.y = 0;
+        //             }
+        //             console.log(" vely " + that.velocity.y);
+        //             // 
+        //         }
+        //     }
+        // });
     }
 
     flickerTest(ctx) {
