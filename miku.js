@@ -2,8 +2,6 @@ class Miku {
     constructor(game, x, y, spritesheet) {
         Object.assign(this, { game, x, y, spritesheet});
         //(spritesheet, xStart, yStart, refWidth, refHeight, frameCount, frameDuration, framePadding, reverse, loop)
-        
-        this.name = "miku";
 
         this.x = x - 25;
         this.y = y;
@@ -49,7 +47,9 @@ class Miku {
     update() {
         // this.moving();
         this.physics();
-
+        this.updateLastBB();
+        this.updateBB();
+        this.collision();
         // console.log(this.game.timer.tick() + "");
     }
     
@@ -68,7 +68,7 @@ class Miku {
         // ctx.stroke();
 
         //bounding box
-        ctx.strokeRect(this.x + 25, this.y + 5, 42, 86);
+        ctx.strokeRect(this.x + 25, this.y + 5, PARAMS.BLOCKWIDTH,PARAMS.BLOCKWIDTH);
 
         // this.idle.drawFrame(this.game.clockTick, ctx, 0, 0, scale, false);
         // this.idle.drawFrame(this.game.clockTick, ctx, 175, 0, scale, true);
@@ -119,7 +119,7 @@ class Miku {
     
     updateBB() {
         //this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
-        this.BB = new BoundingBox(this.x + 25, this.y + 5, 42, 86, "miku");
+        this.BB = new BoundingBox(this.x + 25, this.y + 5, PARAMS.BLOCKWIDTH,PARAMS.BLOCKWIDTH);
     }
 
     updateLastBB() {
@@ -186,6 +186,9 @@ class Miku {
         if (this.velocity.x >= MAX_WALK) this.velocity.x = MAX_WALK;
         if (this.velocity.x <= -1 * MAX_WALK) this.velocity.x = -MAX_WALK;
 
+        if (this.velocity.y >= MAX_FALL) this.velocity.y = MAX_FALL;
+        // if (this.velocity.x <= -1 * MAX_WALK) this.velocity.x = -MAX_WALK;
+
         //update state
         if(this.velocity.y === 0) {//on ground
             console.log("Walking");
@@ -209,34 +212,32 @@ class Miku {
         //update position
         this.x += this.velocity.x * TICK * 2;
         this.y += this.velocity.y * TICK * 2;
-        this.updateLastBB();
-        this.updateBB();
+        
         // console.log(" vely " + this.velocity.y);
 
+        
+    }
+
+    collision() {
         //update collision
         var that = this;
         this.game.entities.forEach(function (entity) {
-            if(entity.BB && that.BB.collide(entity.BB)) {
+            if(entity.BB && !(entity instanceof Miku) && that.BB.collide(entity.BB)) {
                 if(that.velocity.y > 0) { //if falling
-                    // if(that.y >= 200) {
-                    //     that.y = 200 - 0;
-                    //     that.velocity.y = 0;
-                    //     that.jumped = false;
-                    //     if(that.state === 4) that.state = 0;
-                    // }
                     if((entity instanceof Ground)//landing
                     && (that.lastBB.bottom) <= entity.BB.top) { 
-                        console.log("pop");
-                        that.y = entity.BB.top - 99; //PARAMS.BLOCKWIDTH
+                        // that.y = entity's top - miku's height;
+                        that.y = entity.BB.top - 2 * PARAMS.BLOCKWIDTH;
                         that.velocity.y === 0;
+                        if(that.state == 4) that.state = 0;
+                        that.updateBB;
                     }
-                    // console.log(" vely " + that.velocity.y);
-                    // 
+                    //land on enemy
                 }
+                //
             }
         });
     }
-
     flickerTest(ctx) {
         if(this.elaspedTimeFlicker >  0.5) {
             this.flickerflag = !this.flickerflag;
