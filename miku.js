@@ -68,7 +68,7 @@ class Miku {
         // ctx.stroke();
 
         //bounding box
-        ctx.strokeRect(this.x + 25, this.y + 5, PARAMS.BLOCKWIDTH,PARAMS.BLOCKWIDTH);
+        ctx.strokeRect(this.x + 25, this.y + 5, PARAMS.BLOCKWIDTH,PARAMS.BLOCKWIDTH * 2);
 
         // this.idle.drawFrame(this.game.clockTick, ctx, 0, 0, scale, false);
         // this.idle.drawFrame(this.game.clockTick, ctx, 175, 0, scale, true);
@@ -119,7 +119,7 @@ class Miku {
     
     updateBB() {
         //this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
-        this.BB = new BoundingBox(this.x + 25, this.y + 5, PARAMS.BLOCKWIDTH,PARAMS.BLOCKWIDTH);
+        this.BB = new BoundingBox(this.x + 25, this.y + 5, PARAMS.BLOCKWIDTH,PARAMS.BLOCKWIDTH * 2);
     }
 
     updateLastBB() {
@@ -136,7 +136,6 @@ class Miku {
         const DEC_REL = 70;
         
         this.fall_acc = 100;
-        const MIN_FALL = 20;
         const MAX_FALL = 100;
 
         const FLOOR = 250;
@@ -213,7 +212,7 @@ class Miku {
         this.x += this.velocity.x * TICK * 2;
         this.y += this.velocity.y * TICK * 2;
         
-        // console.log(" vely " + this.velocity.y);
+        console.log(" vely " + this.velocity.y);
 
         
     }
@@ -225,12 +224,13 @@ class Miku {
             if(entity.BB && !(entity instanceof Miku) && that.BB.collide(entity.BB)) {
                 if(that.velocity.y > 0) { //if falling
                     if((entity instanceof Ground)//landing
-                    && (that.lastBB.bottom) <= entity.BB.top) { 
+                    && (that.lastBB.bottom) >= entity.BB.top) { 
                         // that.y = entity's top - miku's height;
-                        that.y = entity.BB.top - 2 * PARAMS.BLOCKWIDTH;
+                        that.y = entity.BB.top - 2 * PARAMS.BLOCKWIDTH - 5;
                         that.velocity.y === 0;
+                        that.jumped = false;
                         if(that.state == 4) that.state = 0;
-                        that.updateBB;
+                        that.updateBB();
                     }
                     //land on enemy
                 }
