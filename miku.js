@@ -3,6 +3,8 @@ class Miku {
         Object.assign(this, { game, x, y, spritesheet});
         //(spritesheet, xStart, yStart, refWidth, refHeight, frameCount, frameDuration, framePadding, reverse, loop)
         
+        this.name = "miku";
+
         this.x = x - 25;
         this.y = y;
         this.velocity = {x:0, y:0};
@@ -17,6 +19,8 @@ class Miku {
         this.BB;
         this.lastBB;
         
+        this.jumped = false;
+
         this.animations = [];
         this.animationIterator = 0;
         this.elaspedTime = 0;
@@ -115,7 +119,7 @@ class Miku {
     
     updateBB() {
         //this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
-        this.BB = new BoundingBox(this.x + 25, this.y + 5, 42, 86);
+        this.BB = new BoundingBox(this.x + 25, this.y + 5, 42, 86, "miku");
     }
 
     updateLastBB() {
@@ -170,12 +174,10 @@ class Miku {
 
         this.velocity.y += this.fall_acc * TICK;
 
-        if(this.game.up) {
+        if(this.game.up && !this.jumped) {
+            this.jumped = true;
             console.log("jump");
-            if(this.velocity.y == 0) {
-                this.velocity.y = -80;
-                
-            }
+            this.velocity.y = -80;
         }
         //update min y
         // if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
@@ -185,12 +187,14 @@ class Miku {
         if (this.velocity.x <= -1 * MAX_WALK) this.velocity.x = -MAX_WALK;
 
         //update state
-        if(this.velocity.y == 0) {//on ground
+        if(this.velocity.y === 0) {//on ground
+            console.log("Walking");
             if(this.velocity.x == 0) this.state = 0;
             if(Math.abs(this.velocity.x) > 40) {
                 this.state = 2;
             } else if(Math.abs(this.velocity.x) > 0) {
                 this.state = 1;
+                
             }
             
         } else {
@@ -211,20 +215,22 @@ class Miku {
 
         //update collision
         var that = this;
-        this.game.entities.forEach(function(entity) {
+        this.game.entities.forEach(function (entity) {
             if(entity.BB && that.BB.collide(entity.BB)) {
                 if(that.velocity.y > 0) { //if falling
-                    if(that.y >= 200) {
-                        that.y = 200 - 0;
-                        that.velocity.y = 0;
-                        if(that.state === 4) that.state = 0;
-                    }
+                    // if(that.y >= 200) {
+                    //     that.y = 200 - 0;
+                    //     that.velocity.y = 0;
+                    //     that.jumped = false;
+                    //     if(that.state === 4) that.state = 0;
+                    // }
                     if((entity instanceof Ground)//landing
-                    && (that.lastBB.bot) <= entity.BB.top) { 
-                        that.y = entity.BB.top - 91.07; //PARAMS.BLOCKWIDTH
-                        that.velocity.y = 0;
+                    && (that.lastBB.bottom) <= entity.BB.top) { 
+                        console.log("pop");
+                        that.y = entity.BB.top - 99; //PARAMS.BLOCKWIDTH
+                        that.velocity.y === 0;
                     }
-                    console.log(" vely " + that.velocity.y);
+                    // console.log(" vely " + that.velocity.y);
                     // 
                 }
             }

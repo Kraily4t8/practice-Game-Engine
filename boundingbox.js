@@ -1,24 +1,18 @@
 class BoundingBox {
-    constructor (x, y, width, height) {
-        Object.assign(this, {x, y, width, height});
+    constructor (x, y, width, height, name) {
+        Object.assign(this, {x, y, width, height, name});
 
         this.left = x;
         this.right = x + this.width;
         this.top = y;
-        this.bot = y + this.height;
+        this.bottom = y + this.height;
     }
 
     //checking for collision with other
-    collide(other) {
-        if(this.right > other.left) { // if right side is to the left of other
-            if(this.left < other.right) {// if left is to the right of other
-                if(this.top < other.bot) { //if top is below the other
-                    if(this.bot > other.top) { // if bot is above the other
-                        
-                        return true;
-                    }
-                }
-            }
+    collide(oth) {
+        // console.log("this.top < oth.bottom" + this.top < oth.bottom);
+        if (this.right > oth.left && this.left < oth.right && this.top < oth.bottom && this.bottom > oth.top) {
+            return true;
         }
         return false;
     }
