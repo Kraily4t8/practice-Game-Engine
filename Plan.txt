@@ -9,3 +9,48 @@ render charcter
 	render one cell in the sheet
 	get action feedback thru console
 	on action, switch cell in the sheet
+
+Miku State Manager
+
+idle //state = 0
+	if(vel.y == 0 && Math.abs(vel.x) < RunningSpeed && Math.abs(vel.x) > 0) state = walking
+	if(vel.y < 0) state = jumping
+	if(vel.y > 0) state = falling
+	if(attack) state = attack
+	if(collide with enemy) state = knocked back
+walking //state = 1
+	if(vel.y == 0 && vel.x == 0) state = idle
+	if(vel.y == 0 && Math.abs(vel.x) >= RunningSpeed) state = running
+	if(vel.y < 0) state = jumping
+	if(vel.y > 0) state = falling
+	if(attack) state = attack
+	if(collide with enemy) state = knocked back
+running //state = 2
+	if(vel.y == 0 && vel.x == 0) state = idle
+	if(vel.y == 0 && Math.abs(vel.x) < RunningSpeed && Math.abs(vel.x) > 0) state = walking
+	if(jump) state = jumping
+	if(vel.y > 0) state = falling
+	if(attack) state = attack
+	if(collide with enemy) state = knocked back
+jumping //state = 3
+	if(vel.y > 0) state = falling
+	if(vel.y == 0) state = landing
+	if(attack) state = attack
+	if(collide with enemy) state = knocked back
+falling //state = 4
+	if(vel.y == 0) state = landing
+	if(attack) state = attack
+	if(collide with enemy) state = knocked back
+landing // state = 5
+	action lockout till animation finishes	
+	if(vel.y == 0) state = idle
+	if(vel.y == 0 && Math.abs(vel.x) > 0) state = walking
+attack //state = 6
+	cd= 100
+	action lockout till animation finishes
+	if(collide with enemy) state = knocked back
+	state = previous state	
+knockedBack //state = 7
+	cd = 100
+	action lockout till animation finishes
+	
