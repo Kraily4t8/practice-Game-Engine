@@ -11,7 +11,8 @@ class BoundingBox {
     //checking for collision with other
     collide(oth) {
         if (this.right > oth.left && this.left < oth.right && this.top < oth.bottom && this.bottom > oth.top) {
-            // console.log(this.bottom + " collided " + oth.top);
+            if(oth.name == "specter")
+            console.log(this.name + " " + this.right + " collided " + oth.name + " " + oth.left);
             return true;
         }
         return false;

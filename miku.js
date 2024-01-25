@@ -8,7 +8,7 @@ class Miku {
         this.velocity = {x:0, y:0};
 
         this.facing = false; //facing true: left false: right
-        this.state = 0; //0 = idle, 1 = walking, 2 = running, 3= jump, 4= falling, 5= landing, 6= attacking, 7= dancing, 8 = jumping
+        this.state = 0; //0 = idle, 1 = walking, 2 = running, 3= jump, 4= falling, 5= landing, 6= attacking, 7= dancing, 8 = hurt, 9 = jumping
         this.defeat = false;
         this.flickerflag = true; //when hurt
         //defeat
@@ -28,7 +28,7 @@ class Miku {
     }
     
     loadAnimations() {
-        for (let i = 0; i < 9; i++) { //9 total animations
+        for (let i = 0; i < 10; i++) { //9 total animations
             this.animations.push([]);
         }
         //spritesheet, xStart, yStart, width, height, frameCount, frameDuration, framePadding, reverse, loop
@@ -40,12 +40,12 @@ class Miku {
         this.animations[5] = new Animator(this.spritesheet, 552, 134, 75, 100, 2, 0.23, 2.25, false, true);//5= landing 
         this.animations[6] = new Animator(this.spritesheet, 5, 236, 82, 65, 8, 0.2, 2.25, false, true);//6= attacking
         this.animations[7] = new Animator(this.spritesheet, 0, 432, 83.5, 64, 12, 0.25, 0.45, false, true);//7= dancing 
-        this.animations[8] = new Animator(this.spritesheet, 1, 134, 74, 100, 9, 0.23, 4, false, true);//8 = jumping
-        this.defeatAnim = new Animator(this.spritesheet, 0, 370, 86, 60, 3, 0.6, 0, false, true);
+        this.animations[8] = new Animator(this.spritesheet, 0, 370, 86, 60, 2, 0.6, 0, false, true);//8 = hurt
+        this.animations[9] = new Animator(this.spritesheet, 1, 134, 74, 100, 9, 0.23, 4, false, true);//9 = jumping
+        this.defeatAnim = new Animator(this.spritesheet, 0, 370, 86, 60, 3, 0.8, 0, false, true);
     }
 
     update() {
-        // this.moving();
         this.physics();
         this.updateLastBB();
         this.updateBB();
@@ -136,50 +136,96 @@ class Miku {
         const DEC_REL = 70;
         
         this.fall_acc = 100;
-        const MAX_FALL = 100;
+        const MAX_FALL = 300;
 
         const FLOOR = 250;
 
-        if (Math.abs(this.velocity.x) < MIN_WALK) { //if not moving, check for button then add movement
-            this.velocity.x = 0;
-            this.state = 0;
-            if(this.game.right) {
-                this.velocity.x += ACC_WALK;
-            }
-            if(this.game.left) {
-                this.velocity.x -= ACC_WALK;
-            }
-        } else if (Math.abs(this.velocity.x) >= MIN_WALK) { // if greater than min_walk, check if player wants to speed up or slow down
-            if(this.facing == false) { //facing right
-                if (this.game.right && !this.game.left && !this.game.down) {
-                    this.velocity.x += ACC_WALK * TICK;
-                } else if (this.game.left && !this.game.right && !this.game.down) {
-                    this.velocity.x -= DEC_SKID * TICK;
-                } else {
-                    this.velocity.x -= DEC_REL * TICK;
+        if(this.state != 4 || this.state != 3) { //if not falling
+            if (Math.abs(this.velocity.x) < MIN_WALK) { //if not moving, check for button then add movement
+                this.velocity.x = 0;
+                this.state = 0;
+                if(this.game.right) {
+                    this.velocity.x += ACC_WALK;
                 }
-            } else {
-                if (this.game.left && !this.game.right && !this.game.down) {
-                    this.velocity.x -= ACC_WALK * TICK;
-                } else if (this.game.right && !this.game.left && !this.game.down) {
-                    this.velocity.x += DEC_SKID * TICK;
-                } else {
-                    this.velocity.x += DEC_REL * TICK;
+                if(this.game.left) {
+                    this.velocity.x -= ACC_WALK;
                 }
-            }
-        } else if(Math.abs(this.velocity.x) > MAX_WALK) {
+            } else if (Math.abs(this.velocity.x) >= MIN_WALK) { //w if greater than min_walk, check if player wants to speed up or slow down
+                // console.log("enter");
+                this.state = 1;
+                if(this.facing == false) { //facing right
+                    if (this.game.right && !this.game.left && !this.game.down) {
+                        this.velocity.x += ACC_WALK * TICK;
+                    } else if (this.game.left && !this.game.right && !this.game.down) {
+                        this.velocity.x -= DEC_SKID * TICK;
+                    } else {
+                        this.velocity.x -= DEC_REL * TICK;
+                    }
+                } else {
+                    if (this.game.left && !this.game.right && !this.game.down) {
+                        this.velocity.x -= ACC_WALK * TICK;
+                    } else if (this.game.right && !this.game.left && !this.game.down) {
+                        this.velocity.x += DEC_SKID * TICK;
+                    } else {
+                        this.velocity.x += DEC_REL * TICK;
+                    }
+                }
+            } else if(Math.abs(this.velocity.x) > MAX_WALK) {
 
+            }
+            // if(this.game.up && !this.jumped) {
+            if(this.game.up) {
+                this.jumped = true;
+                console.log("jump");
+                this.velocity.y = -40;
+            }
+            //update min y
+            // if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
+        } else {
+            //air physics
+            //vertical phyics
+            if (this.velocity.y < 0 && this.game.A) { // holding A while jumping jumps higher
+                // this.velocity.y -= 5 * TICK;
+                // if (this.fallAcc === WALK_FALL) this.velocity.y -= (WALK_FALL - WALK_FALL_A) * TICK;
+                // if (this.fallAcc === RUN_FALL) this.velocity.y -= (RUN_FALL - RUN_FALL_A) * TICK;
+            }
+
+            // horizontal physics
+            if (Math.abs(this.velocity.x) < MIN_WALK) { //if not moving, check for button then add movement
+                this.velocity.x = 0;
+                this.state = 0;
+                if(this.game.right) {
+                    this.velocity.x += ACC_WALK / 2;
+                }
+                if(this.game.left) {
+                    this.velocity.x -= ACC_WALK / 2;
+                }
+            } else if (Math.abs(this.velocity.x) >= MIN_WALK) { //w if greater than min_walk, check if player wants to speed up or slow down
+                if(this.facing == false) { //facing right
+                    if (this.game.right && !this.game.left && !this.game.down) {
+                        this.velocity.x += ACC_WALK * TICK;
+                    } else if (this.game.left && !this.game.right && !this.game.down) {
+                        this.velocity.x -= DEC_SKID * TICK;
+                    } else {
+                        this.velocity.x -= DEC_REL * TICK;
+                    }
+                } else {
+                    if (this.game.left && !this.game.right && !this.game.down) {
+                        this.velocity.x -= ACC_WALK * TICK;
+                    } else if (this.game.right && !this.game.left && !this.game.down) {
+                        this.velocity.x += DEC_SKID * TICK;
+                    } else {
+                        this.velocity.x += DEC_REL * TICK;
+                    }
+                }
+            } else if(Math.abs(this.velocity.x) > MAX_WALK) {
+
+            }
         }
 
         this.velocity.y += this.fall_acc * TICK;
 
-        if(this.game.up && !this.jumped) {
-            this.jumped = true;
-            console.log("jump");
-            this.velocity.y = -80;
-        }
-        //update min y
-        // if(this.y >= FLOOR && !this.game.up) this.velocity.y = 0;
+        
 
         //update max
         if (this.velocity.x >= MAX_WALK) this.velocity.x = MAX_WALK;
@@ -192,7 +238,7 @@ class Miku {
         if(this.velocity.y === 0) {//on ground
             console.log("Walking");
             if(this.velocity.x == 0) this.state = 0;
-            if(Math.abs(this.velocity.x) > 40) {
+            if(Math.abs(this.velocity.x) > 40 && this.state != 8) {
                 this.state = 2;
             } else if(Math.abs(this.velocity.x) > 0) {
                 this.state = 1;
@@ -212,7 +258,7 @@ class Miku {
         this.x += this.velocity.x * TICK * 2;
         this.y += this.velocity.y * TICK * 2;
         
-        console.log(" vely " + this.velocity.y);
+        // console.log(" vely " + this.velocity.y);
 
         
     }
@@ -232,9 +278,34 @@ class Miku {
                         if(that.state == 4) that.state = 0;
                         that.updateBB();
                     }
-                    //land on enemy
+                    //land on entity
+                    if(entity instanceof SpecterKnight
+                        && (that.lastBB.bottom) >= entity.BB.top) {
+                            that.velocity.y -=150;
+                        }
                 }
-                //
+                if(entity instanceof SpecterKnight) {
+                    //flicker flag and hurta
+                    that.state = 8;
+                    //gets knocked backed
+                    //miku gets hurt and gains invulnerability frames
+                    // if(that.BB.right >= entity.BB.left) {
+                    //     console.log("left");
+                    //     that.x = entity.BB.left - 42 * 2;
+                    //     that.velocity.x -= 100;
+                    // }
+                    // if(that.BB.left <= entity.BB.right) {
+                    //     console.log("right");
+                    //     that.x = entity.BB.right;
+                    //     that.velocity.x += 100;
+                    // }
+                    // if(!that.facing) {
+                    //     that.velocity.x -= 100;
+                    // } else {
+                    //     // that.x = entity.BB.right;
+                    //     // that.velocity.x -= 100;
+                    // }
+                }
             }
         });
     }
@@ -287,13 +358,14 @@ class Miku {
         this.animations[0].drawFrame(this.game.clockTick, ctx, 0, 0, scale,flip);
         this.animations[1].drawFrame(this.game.clockTick, ctx, 90, 0, scale, flip);
         this.animations[2].drawFrame(this.game.clockTick, ctx, 200, 0, scale, flip);
-        this.animations[8].drawFrame(this.game.clockTick, ctx, 0, 100, scale, flip);
+        this.animations[9].drawFrame(this.game.clockTick, ctx, 0, 100, scale, flip);
         this.animations[3].drawFrame(this.game.clockTick, ctx, 110, 100, scale, flip);
         this.animations[4].drawFrame(this.game.clockTick, ctx, 210, 100, scale, flip);
         this.animations[5].drawFrame(this.game.clockTick, ctx, 320, 100, scale, flip);
         this.animations[6].drawFrame(this.game.clockTick, ctx, 320, 0, scale, flip);
         this.defeatAnim.drawFrame(this.game.clockTick, ctx, 0, 260, scale, flip);
         this.animations[7].drawFrame(this.game.clockTick, ctx, 110, 260, scale, flip);
+        this.animations[8].drawFrame(this.game.clockTick, ctx, 260, 260, scale, flip);
         this.elaspedTime += this.game.clockTick;
     }
 }

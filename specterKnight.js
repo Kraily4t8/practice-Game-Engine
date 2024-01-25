@@ -45,7 +45,7 @@ class SpecterKnight {
 
     updateBB() {
         //this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
-        this.BB = new BoundingBox(this.x + 10, this.y + 5, 42, 70);
+        this.BB = new BoundingBox(this.x + 50, this.y + 5, 42, 90, "specter");
         // console.log("specter knight BB");
     }
 
