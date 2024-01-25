@@ -8,7 +8,7 @@ class Miku {
         this.velocity = {x:0, y:0};
 
         this.facing = false; //facing true: left false: right
-        this.state = 0; //0 = idle, 1 = walking, 2 = running, 3= jump, 4= falling, 5= landing, 6= attacking, 7= dancing, 8 = hurt, 9 = jumping
+        this.state = 0; //0 = idle, 1 = walking, 2 = running, 3= jump, 4= falling, 5= landing, 6= attacking, 7= hurt, 8 = dancing, 9 = jumping
         this.defeat = false;
         this.flickerflag = true; //when hurt
         //defeat
@@ -39,14 +39,14 @@ class Miku {
         this.animations[4] = new Animator(this.spritesheet, 395, 134, 75, 100, 2, 0.23, 2.25, false, true);//4= falling 
         this.animations[5] = new Animator(this.spritesheet, 552, 134, 75, 100, 2, 0.23, 2.25, false, true);//5= landing 
         this.animations[6] = new Animator(this.spritesheet, 5, 236, 82, 65, 8, 0.2, 2.25, false, true);//6= attacking
-        this.animations[7] = new Animator(this.spritesheet, 0, 432, 83.5, 64, 12, 0.25, 0.45, false, true);//7= dancing 
-        this.animations[8] = new Animator(this.spritesheet, 0, 370, 86, 60, 2, 0.6, 0, false, true);//8 = hurt
+        this.animations[7] = new Animator(this.spritesheet, 0, 370, 86, 60, 2, 0.6, 0, false, true);//7 = hurt
+        this.animations[8] = new Animator(this.spritesheet, 0, 432, 83.5, 64, 12, 0.25, 0.45, false, true);//8 = dancing 
         this.animations[9] = new Animator(this.spritesheet, 1, 134, 74, 100, 9, 0.23, 4, false, true);//9 = jumping
         this.defeatAnim = new Animator(this.spritesheet, 0, 370, 86, 60, 3, 0.8, 0, false, true);
     }
 
     update() {
-        this.physics();
+        this.physics3();
         this.updateLastBB();
         this.updateBB();
         this.collision();
@@ -124,6 +124,87 @@ class Miku {
 
     updateLastBB() {
         this.lastBB = this.BB;
+    }
+
+    physics2() {
+        const TICK = this.game.clockTick;
+
+        const MIN_WALK = 30;
+        const MAX_WALK = 160;
+        const ACC_WALK = 40;
+        const DEC_SKID = 200;
+        const DEC_REL = 70;
+        
+        this.fall_acc = 100;
+        const MAX_FALL = 300;
+
+        //when on ground //states = 0,1,2,8
+        if(this.state == 0 || this.state == 1 || this.state == 2 || this.state == 8) {
+            // listed by priority
+            // if(collide with enemy) this.state = 7;
+            if(Math.abs(this.velocity.x) < MIN_WALK)
+            if(this.game.up) this.state = 3; //jump
+            if(this.velocity.y > 0) this.state = 4;//falling
+            // if(collide + 2 == ground) this.state = 5;//landing
+            // if(this.attack) this.state = 6;
+            
+            if(this.state == 1) {
+
+            }
+        } 
+        //when in air //states = 3,4,5
+        //either //states = 6,7
+
+        //to enter idle state = 1
+
+    }
+
+    physics3() {
+        const TICK = this.game.clockTick;
+
+        const MIN_WALK = 30;
+        const MAX_WALK = 160;
+        const ACC_WALK = 40;
+        const DEC_SKID = 200;
+        const DEC_REL = 70;
+        
+        this.fall_acc = 100;
+        const MAX_FALL = 300;
+        //condition on entering states
+        
+        //if state in a non air state
+        if(this.state < 4 || this.state > 5) {
+            //to enter idle state = 0
+            if(Math.abs(this.velocity.x) < MIN_WALK) {
+                this.state = 0;
+                this.velocity.x = 0;
+            }
+            //to enter walk state = 1
+            if(Math.abs(this.velocity.x) < MAX_WALK && Math.abs(this.velocity.x) > MIN_WALK) {
+                this.state = 1;
+            }
+        }
+
+        //state dependent actions
+        if(this.game.right || this.game.left) {
+            let direction = 1;
+            if(this.game.left) direction = -1;
+            if(this.state <= 1) {
+                this.velocity.x += ACC_WALK * direction;
+            }
+        }
+        
+        //gravity on
+        //always falling
+        this.velocity.y += this.fall_acc * TICK;
+
+        //update direction 
+        if (this.velocity.x < 0) this.facing = true;
+        if (this.velocity.x > 0) this.facing = false;
+
+        //update position
+        this.x += this.velocity.x * TICK * 2;
+        this.y += this.velocity.y * TICK * 2;
     }
 
     physics() {
@@ -224,8 +305,6 @@ class Miku {
         }
 
         this.velocity.y += this.fall_acc * TICK;
-
-        
 
         //update max
         if (this.velocity.x >= MAX_WALK) this.velocity.x = MAX_WALK;
@@ -364,8 +443,8 @@ class Miku {
         this.animations[5].drawFrame(this.game.clockTick, ctx, 320, 100, scale, flip);
         this.animations[6].drawFrame(this.game.clockTick, ctx, 320, 0, scale, flip);
         this.defeatAnim.drawFrame(this.game.clockTick, ctx, 0, 260, scale, flip);
-        this.animations[7].drawFrame(this.game.clockTick, ctx, 110, 260, scale, flip);
-        this.animations[8].drawFrame(this.game.clockTick, ctx, 260, 260, scale, flip);
+        this.animations[8].drawFrame(this.game.clockTick, ctx, 110, 260, scale, flip);
+        this.animations[9].drawFrame(this.game.clockTick, ctx, 260, 260, scale, flip);
         this.elaspedTime += this.game.clockTick;
     }
 }
