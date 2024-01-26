@@ -7,7 +7,7 @@ class Miku {
         this.y = y;
         this.velocity = {x:0, y:0};
 
-        this.facing = false; //facing true: left false: right
+        this.facing = 1; //1: right -1: left
         this.state = 0; //0 = idle, 1 = walking, 2 = running, 3= jump, 4= falling, 5= landing, 6= attacking, 7= hurt, 8 = dancing, 9 = jumping
         this.defeat = false;
         this.flickerflag = true; //when hurt
@@ -163,36 +163,128 @@ class Miku {
         const TICK = this.game.clockTick;
 
         const MIN_WALK = 30;
-        const MAX_WALK = 160;
+        const MAX_WALK = 80;
         const ACC_WALK = 40;
         const DEC_SKID = 200;
         const DEC_REL = 70;
         
         this.fall_acc = 100;
         const MAX_FALL = 300;
-        //condition on entering states
-        
-        //if state in a non air state
-        if(this.state < 4 || this.state > 5) {
-            //to enter idle state = 0
+
+        // console.log(this.state);
+        console.log(this.x + " " +this.y);
+        //idle
+        if(this.state == 0) {
+            //responsibilities
+            this.velocity.x = 0;
+            //options left right jump fall
+            if(this.game.right || this.game.left) {
+                //enter walk
+                let direction = 1;
+                if(this.game.left) direction = -1;
+                this.velocity.x += MIN_WALK * direction + 1;
+                this.state = 1;
+            }
+            if(this.game.up) {
+                this.velocity.y = -40;
+                this.state = 3;
+            }
+            if(this.velocity.y > 0) this.state = 4;
+        }
+
+        //walk or run
+        if(this.state == 1) {
+            console.log("enter");
+            this.velocity.y = 0;
+            //options idle left right jump fall
             if(Math.abs(this.velocity.x) < MIN_WALK) {
                 this.state = 0;
-                this.velocity.x = 0;
             }
-            //to enter walk state = 1
-            if(Math.abs(this.velocity.x) < MAX_WALK && Math.abs(this.velocity.x) > MIN_WALK) {
-                this.state = 1;
+
+            if(this.game.right || this.game.left) {
+                let direction = 1;
+                if(this.game.left) direction = -1;
+                this.velocity.x += ACC_WALK * direction;
+                if(Math.abs(this.velocity.x) >= MAX_WALK) {
+                    this.velocity.x = MAX_WALK * direction;
+                    this.state = 2;
+                }
+            }
+            //slowing down
+            if(!this.game.right && !this.game.left) {
+
+            }
+            if(this.game.up) {
+                this.velocity.y = -40;
+                this.state = 3;
             }
         }
 
-        //state dependent actions
-        if(this.game.right || this.game.left) {
-            let direction = 1;
-            if(this.game.left) direction = -1;
-            if(this.state <= 1) {
+        if(this.state == 2) {
+            this.velocity.y = 0;
+            if(Math.abs(this.velocity.x) < MIN_WALK) {
+                this.state = 0;
+            }
+            //options left right jump fall
+            if(this.game.right || this.game.left) {
+                let direction = 1;
+                if(this.game.left) direction = -1;
                 this.velocity.x += ACC_WALK * direction;
             }
+            if(this.game.up) {
+                this.velocity.y = -40;
+                this.state = 3;
+            }
         }
+
+        //jump
+        if(this.state == 3) {
+            //air physics
+            if(this.game.right || this.game.left) {
+                let direction = 1;
+                if(this.game.left) direction = -1;
+                this.velocity.x += ACC_WALK * direction;
+            }
+            if(this.velocity.y > 0) {
+                this.state = 4;
+            }
+        }
+
+        //if falling
+        if(this.state == 4) {
+            //air physics
+            if(this.game.right || this.game.left) {
+                let direction = 1;
+                if(this.game.left) direction = -1;
+                this.velocity.x += ACC_WALK * direction;
+            }
+            //if BB.bot + 10 collides with a ground, this.state = 5
+            if(this.velocity.y == 0) {
+                this.state = 0; 
+            }
+        }
+
+        //landing
+        if(this.state == 5) {
+            //trigger timer, when timer == some amount, this.state = 0;
+        }
+
+        //attack
+        if(this.state == 6) {
+
+        }
+        // //if state in a non air state
+        // if(this.state < 4 || this.state > 5) {
+        //     //to enter idle state = 0
+        //     if(Math.abs(this.velocity.x) < MIN_WALK) {
+        //         this.state = 0;
+        //         this.velocity.x = 0;
+        //     }
+        //     //to enter walk state = 1
+        //     if(Math.abs(this.velocity.x) < MAX_WALK && Math.abs(this.velocity.x) > MIN_WALK) {
+        //         this.state = 1;
+        //     }
+        // }
         
         //gravity on
         //always falling
@@ -224,7 +316,7 @@ class Miku {
         if(this.state != 4 || this.state != 3) { //if not falling
             if (Math.abs(this.velocity.x) < MIN_WALK) { //if not moving, check for button then add movement
                 this.velocity.x = 0;
-                this.state = 0;
+                // this.state = 0;
                 if(this.game.right) {
                     this.velocity.x += ACC_WALK;
                 }
@@ -274,7 +366,7 @@ class Miku {
             // horizontal physics
             if (Math.abs(this.velocity.x) < MIN_WALK) { //if not moving, check for button then add movement
                 this.velocity.x = 0;
-                this.state = 0;
+                // this.state = 0;
                 if(this.game.right) {
                     this.velocity.x += ACC_WALK / 2;
                 }
@@ -316,7 +408,7 @@ class Miku {
         //update state
         if(this.velocity.y === 0) {//on ground
             console.log("Walking");
-            if(this.velocity.x == 0) this.state = 0;
+            // if(this.velocity.x == 0) this.state = 0;
             if(Math.abs(this.velocity.x) > 40 && this.state != 8) {
                 this.state = 2;
             } else if(Math.abs(this.velocity.x) > 0) {
