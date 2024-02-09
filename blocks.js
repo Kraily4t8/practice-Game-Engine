@@ -2,9 +2,9 @@ class Ground {
     constructor(game, x, y, w, spritesheet) {
         Object.assign(this, { game, x, y, w, spritesheet});
 
-        this.BB = new BoundingBox(this.x, this.y, 50, 50);
-        // this.leftBB = new BoundingBox(this.x, this.y, 30, 30 * 2)
-        // this.rightBB = new BoundingBox(this.x + this.w - 30, this.y, 30, 30 * 2)
+        this.BB = new BoundingBox(this.x, this.y, this.w, PARAMS.BLOCKWIDTH, "ground");
+        // this.leftBB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH * 2)
+        // this.rightBB = new BoundingBox(this.x + this.w - PARAMS.BLOCKWIDTH, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH * 2)
     };
 
     update(){
@@ -12,6 +12,7 @@ class Ground {
     };
 
     draw(ctx) {
-        ctx.strokeRect(this.x, this.y, 50, 50);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(this.x, this.y, this.w, PARAMS.BLOCKWIDTH);
     };
 }

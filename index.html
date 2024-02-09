@@ -13,19 +13,38 @@
     <script type="text/javascript" src="./animationhandler.js"></script>
     <script type="text/javascript" src="./animator.js"></script>
     <script type="text/javascript" src="./boundingbox.js"></script>
+    <script type="text/javascript" src="./scenemanager.js"></script>
 
     <script type="text/javascript" src="./blocks.js"></script>
     <script type="text/javascript" src="./catplayer.js"></script>
     <script type="text/javascript" src="./miku.js"></script>
+    <script type="text/javascript" src="./mikuTest.js"></script>
     <script type="text/javascript" src="./specterKnight.js"></script>
+    <script type="text/javascript" src="./specterKnightTest.js"></script>
     <script type="text/javascript" src="./main.js"></script>
     <style>
+        h1 {
+            font : 30px serif;
+            text-align: center;
+        }
         canvas {
-            image-rendering: pixelated;
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        div {
+            text-align:center;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameWorld" width="400" height="400" style="background: white; border: 1px solid black" tabindex="0" autofocus></canvas>
+    <h1>Potato</h1>
+    <canvas id="gameWorld" width="800" height="600" style="background: white; border: 1px solid black" tabindex="0" autofocus></canvas>
+    <div>
+        <br/>
+        <input type="checkbox" id="debug"> Debug <input type="checkbox" id="mute"> Mute <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05"> Volume
+    </div>
 </body>
 </html>

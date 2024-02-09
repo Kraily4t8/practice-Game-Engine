@@ -18,6 +18,7 @@ class GameEngine {
         this.right = null;
         this.up = null;
         this.down = null;
+        this.attack = null;
 
         // Options and the Details
         this.options = options || {
@@ -58,6 +59,9 @@ class GameEngine {
                 case "KeyS": 
                     that.down = true;
                 break;
+                case "Space":
+                    that.attack = true;
+                break;
             }
         });
         
@@ -75,6 +79,9 @@ class GameEngine {
                 break;
                 case "KeyS": 
                     that.down = false;
+                break;
+                case "Space":
+                    that.attack = false;
                 break;
             }
         })
